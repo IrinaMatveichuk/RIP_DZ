@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Signup{% endblock %}
+
+{% block page_name %}Регистрация{% endblock %}
+
+{% block body %}
+    <form class="form-horizontal" action="" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for f in form %}
+                        {% if f.errors %}
+                            {% for e in f.errors %}
+                                <p align="center"><strong>{{ f.label }}    {{ e }}</strong></p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">Логин:</label>
+            <div class="col-xs-3 input-group-sm">
+                {{ form.username }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">Имя:</label>
+            <div class="col-xs-3 input-group-sm">
+                {{ form.name }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="enterSurname" class="col-xs-2 control-label">Фамилия:</label>
+            <div class="col-xs-3 input-group-sm">
+                {{ form.surname }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">Email:</label>
+            <div class="col-xs-3 input-group-sm">
+                {{ form.email }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">Телефон:</label>
+            <div class="col-xs-3 input-group-sm">
+                {{ form.phone }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">Адрес:</label>
+            <div class="col-xs-3 input-group-sm">
+                {{ form.address }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword" class="col-xs-2 control-label">Пароль:</label>
+            <div class="col-xs-3 input-group-sm">
+               {{ form.password }}
+            </div>
+            </div>
+        <div class="form-group">
+            <label for="confirmPassword" class="col-xs-2 control-label">Повторите пароль:</label>
+            <div class="col-xs-3 input-group-sm">
+                {{ form.password2 }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-offset-2 col-xs-1">
+                <button type="submit" class="btn btn-primary" style="float: left">Зарегистрироваться</button>
+            </div>
+            <div class="col-xs-2">
+                <a href="{% url 'signup' %}" class="btn btn-default" style="float: right">Войти</a>
+            </div>
+        </div>
+    </form >
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% csrf_token %}
+
+{% block title %}Computer{% endblock %}
+
+{% block page_name %}Сведения о компьютере{% endblock %}
+
+{% block body %}
+    <h2 class="col-md-offset-1">{{ comp.brand }} {{ comp.serial_num }}</h2>
+    <div class="container" style="height: 260px;float: left; margin-bottom: 30px; padding: 0 15px; width: 74%; overflow: hidden;">
+    <table>
+        <tr>
+            <td width="200px"><img src="{{ comp.comp_pic.url }}" height="200px" width="200px"></td>
+            <td width="300px">
+                <ul>
+                    <li>Тип: {{ comp.type }}</li>
+                    <li>Размер экрана: {{ comp.screen_size }}</li>
+                    <li>Установненная OS: {{ comp.installed_OS }}</li>
+                    <li>Тип процессора: {{ comp.processor_type }}</li>
+                    <li>Объем ОП: {{ comp.RAM }}</li>
+                </ul>
+            </td>
+            <td width="200px">
+                <p><em>Компьютер заказали:</em></p>
+                {% for user in users %}
+                    <p>{{ user.first_name }} {{ user.last_name }}</p>
+                {% empty %}
+                    <p>Данный компьютер еще никто не заказал</p>
+                {% endfor %}
+            </td>
+            <td width="200px">
+                <h4 align="right" style="margin-bottom: 35px">Цена: {{ comp.price }}</h4>
+                {% if request.user.is_authenticated %}
+                    <button id='order' class="btn btn-primary col-md-offset-6" name = '{{ comp.id }}'>Заказать</button>
+                {% else %}
+                    <p>Войдите, чтобы сделать заказ</p>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+    </div>
+    <aside id="aside" style="float: right; padding-left: 20px; padding-right: 50px; width: 25%; display: block; overflow: hidden; position:relative;">
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+                <ul class="nav navbar-nav navbar-right">
+                <li><a href={% url "create_computer" %}><span style="color: #0f0f0f" class="glyphicon glyphicon-plus-sign"></span> Добавить компьютер</a></li>
+                </ul>
+            {% elif request.user.is_authenticated %}
+                <h4>Мой заказ</h4>
+                <div class="container">
+                    {% for el in order.computers.all %}
+                        <div class="container_fluid">
+                            <p style="width: 100px; display: inline-block;">{{ el.brand }} {{ el.serial_num }}</p>
+                            <button id="delete{{ el.id }}" onclick="onClick(event, name)" style="margin-left: 60px" name="{{ el.id }}">Удалить</button>
+                        </div>
+                    {% empty %}
+                        <p>Ваш заказ пуст</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+    </aside>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+    function onClick(e, name) {
+            e.preventDefault();
+            var comp_id = name;
+            alert(comp_id);
+            $.post('/order_delete/', {
+                comp_id: comp_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                });
+            }
+    $(document).ready(function() {
+        $('#order').click(function (e) {
+            e.preventDefault();
+            var comp_id = $(this).attr('name');
+            $.post('/order_add/', {
+                comp_id: comp_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                });
+
+        });
+    });
+    </script>
+{% endblock %}

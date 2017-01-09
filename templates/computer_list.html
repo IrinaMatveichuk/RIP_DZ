@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% csrf_token %}
+
+{% block title %}Computers{% endblock %}
+
+{% block page_name %}Главная страница{% endblock %}
+
+{% block body %}
+    <main>
+        <article style="float: left; margin-bottom: 30px; padding: 0 15px; width: 74%; overflow: hidden;" >
+            <h2>Компьютеры в наличии</h2>
+            {% for comp in computers %}
+                <section style="background-color:#eee; border: 1px solid #ccc; padding: 20px; margin-bottom: 10px">
+                    {% include 'comp_short.html' with comp=comp %}
+                </section>
+            {% endfor %}
+            <div class="pagination">
+                <ul class="pagination">
+                    {% for el in computers.paginator.page_range %}
+                        {% if computers.number == el %}
+                            <li class="active"><a href="?page={{ el }}">{{ el }}</a></li>
+                        {% else %}
+                            <li><a href="?page={{ el }}">{{ el }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </article>
+        <aside style="float: right; padding-left: 20px; padding-right: 50px; padding-top: 50px; width: 25%; display: block; overflow: hidden; position:relative;">
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+                <ul class="nav navbar-nav navbar-right">
+                <li><a href={% url "create_computer" %}>
+                    <span style="color: #0f0f0f" class="glyphicon glyphicon-plus-sign"></span>
+                    Добавить компьютер</a></li>
+                </ul>
+                <div id='myModal' class="modal fade">
+                </div>
+            {% elif request.user.is_authenticated %}
+                <h4>Мой заказ</h4>
+                <div class="container">
+                    {% for el in order.computers.all %}
+                        <div class="container_fluid">
+                            <p style="width: 100px; display: inline-block;">{{ el.brand }} {{ el.serial_num }}</p>
+                            <button style="margin-left: 60px" id="delete" name="{{ el.id }}">Удалить</button>
+                        </div>
+                    {% empty %}
+                        <p>Ваш заказ пуст</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Войдите чтобы сделать заказ</p>
+            {% endif %}
+        </aside>
+    </main>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#delete').click(function (e) {
+            e.preventDefault();
+            var comp_id = $(this).attr('name');
+            $.post('/order_delete/', {
+                comp_id: comp_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                });
+        });
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% with id=comp.id %}
+    <h4><a href="{% url 'computer_url' id %}">{{ comp.brand }} {{ comp.serial_num }}</a></h4>
+    <table>
+        <tr>
+            <td width="200px">
+                <img src="{{ comp.comp_pic.url }}" height="150px" width="150px">
+            </td>
+            <td width="400px">
+                <ul>
+                    <li>Размер экрана: {{ comp.screen_size }}</li>
+                    <li>Установненная OS: {{ comp.installed_OS }}</li>
+                    <li>Размер ОП: {{ comp.RAM }}</li>
+                </ul>
+            </td>
+            <td width="400px">
+                <h4 align="right">Цена: {{ comp.price }}</h4>
+            </td>
+        </tr>
+    </table>
+{% endwith %}

@@ -1,0 +1,144 @@
+{% load static %}
+{% load staticfiles %}
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src='{% static "js/jquery-3.1.1.min.js" %}'></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.js"></script>-->
+    <link rel='stylesheet' type = 'text/css' href='{% static "css/bootstrap.css" %}'>
+    <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
+    <title>{% block title %}{% endblock %}</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header style="background-color: indianred">
+        <div class="row">
+            <div class="col-md-1 col-md-offset-1">
+                <p><img src="/comp_shop/media/pic1.jpg" /></p>
+            </div>
+            <div class="col-md-5">
+                <h1><a href={% url "main_page" %}>
+                    <span style="color: black; font-family: serif">Магазин компьютеров</span>
+                </a></h1>
+                <p>{% block page_name %}{% endblock %}</p>
+            </div>
+        </div>
+    </header>
+    <nav class="navbar navbar-default" style="background-color: #dca7a7; color: #0f0f0f">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav navbar-left">
+                <li><a href={% url "main_page" %}><span style="color: #0f0f0f" class="glyphicon glyphicon-home"></span> Главная</a></li>
+                <li><a href={% url "contacts" %}><span style="color: #0f0f0f" class="glyphicon glyphicon-list-alt"></span> Контакты</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+                <li><a href={% url "user_page" %}><span style="color: #0f0f0f" class="glyphicon glyphicon-user"></span> Вы вошли как администратор</a></li>
+            {% elif request.user.is_authenticated %}
+                <li><a href={% url "user_page" %}><span style="color: #0f0f0f" class="glyphicon glyphicon-user"></span> Вы вошли как {{ request.user.last_name }} {{ request.user.first_name }}</a></li>
+            {% else %}
+                <li>
+                    <a id="enter" class="btn btn-default" style="background-color: #dca7a7"><span style="color: #0f0f0f" class="glyphicon glyphicon-log-in"></span>
+                    Вход</a>
+                </li>
+                <li><a href={% url "signup" %}><span style="color: #0f0f0f" class="glyphicon glyphicon-user"></span> Регистрация</a></li>
+            {% endif %}
+            </ul>
+         </div>
+        <div id='myModal' class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" align="center">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Вход</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form name='entrance' class="form-horizontal" method="POST" style="margin-left: 200px" onsubmit="return validate();">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_username" class="control-label col-sm-2">Логин:</label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="text" name="username" id="id_username" value='{{ username }}'>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_password" class="control-label col-sm-2">Пароль:</label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="password" name="password" id="id_password">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-xs-offset-2 col-xs-1">
+                                    <button id="enter1" type="submit" class="btn btn-primary" style="float: left">Войти</button>
+                                </div>
+                                <div class="col-xs-2 col-xs-offset-2">
+                                    <a href="{% url 'signup' %}" class="btn btn-default" style="float: right">Зарегистрироваться</a>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="alert alert-warning" id="error">
+                            <div id="msg"></div>
+                            <div id="msg1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% block body %}{% endblock %}
+    <footer style="background-color: indianred; clear: both; color: #fff; padding: 30px;">
+        <div class="container-fluid">
+            <p align="center">
+                <time style="color: black">2016-12-20</time>
+                <a href={% url "main_page" %}><span style="color: black">Computer shop</span></a>
+            </p>
+        </div>
+    </footer>
+    {% block javascript %}{% endblock %}
+    <script type="text/javascript">
+        function validate() {
+            var fl1 = false;
+            var fl2 = false;
+            if (document.entrance.username.value == "") {
+                $('#msg').show();
+                $('#msg').html('Введите логин');
+                fl1 = false;
+            }
+            else {
+                $('#msg').hide();
+                var username = document.entrance.username.value;
+                fl1 =  true;
+            }
+            if (document.entrance.password.value == "") {
+                $('#msg1').show();
+                $('#msg1').html('Введите пароль');
+                fl2 = false;
+            }
+            else {
+                $('#msg1').hide();
+                var password = document.entrance.password.value;
+                fl2 = true;
+            }
+            $('#error').show();
+            if (fl1 && fl2) {
+                $('#error').hide();
+                $(document).post('/signin/', inf = {
+                    password: password,
+                    username: username
+                });
+            }
+
+            return false;
+        }
+        $(document).ready(function() {
+            $('#enter').click(function (e) {
+                e.preventDefault();
+                $('#myModal').modal('show');
+                $('#error').hide();
+            });
+        });
+    </script>
+</body>
+</html>

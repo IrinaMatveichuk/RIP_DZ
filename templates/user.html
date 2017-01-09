@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% csrf_token %}
+
+{% block title %}User's page{% endblock %}
+
+{% block page_name %}Страница пользователя{% endblock %}
+
+{% block body %}
+    {% if request.user.is_authenticated and request.user.is_superuser %}
+        <h3 align="center" style="height: 310px">Аккаунт администратора</h3>
+        <a href="{% url 'logout' %}" class="btn btn-primary col-md-offset-2">Выйти</a>
+    {% else %}
+        <h3 class="col-md-offset-2">Личные данные пользователя</h3>
+        <div class="container col-md-offset-2" style="height: 310px">
+            <p>Имя: {{ request.user.first_name }}</p>
+            <p>Фамилия: {{ request.user.last_name }}</p>
+            <p>Телефон: {{ request.user.phone }}</p>
+            <p>Адрес: {{ request.user.address }}</p>
+            <a href="{% url 'logout' %}" class="btn btn-primary col-md-offset-1">Выйти</a>
+        </div>
+    {% endif %}
+{% endblock %}
