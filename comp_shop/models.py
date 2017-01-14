@@ -34,7 +34,7 @@ class Computer(models.Model):
 
 
 class User(AbstractUser):
-    phone = models.CharField(max_length=15, default='')
+    phone = models.CharField(max_length=18, default='')
     address = models.TextField(verbose_name='Адрес', default='')
 
     class Meta(AbstractUser.Meta):

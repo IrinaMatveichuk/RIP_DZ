@@ -61,6 +61,8 @@ class RegistrationForm(forms.Form):
         u.first_name = self.cleaned_data.get('name')
         u.last_name = self.cleaned_data.get('surname')
         u.email = self.cleaned_data.get('email')
+        u.address = self.cleaned_data.get('address')
+        u.phone = self.cleaned_data.get('phone')
         u.is_staff = False
         u.is_active = True
         u.is_superuser = False
