@@ -15,10 +15,7 @@
 <body>
     <header style="background-color: indianred">
         <div class="row">
-            <div class="col-md-1 col-md-offset-1">
-                <p><img src="/comp_shop/media/pic1.jpg" /></p>
-            </div>
-            <div class="col-md-5">
+            <div class="col-md-offset-3">
                 <h1><a href={% url "main_page" %}>
                     <span style="color: black; font-family: serif">Магазин компьютеров</span>
                 </a></h1>
@@ -54,6 +51,10 @@
                         <h4 class="modal-title">Вход</h4>
                     </div>
                     <div class="modal-body">
+                        <div class="alert alert-warning" id="error">
+                            <div id="msg"></div>
+                            <div id="msg1"></div>
+                        </div>
                         <form name='entrance' class="form-horizontal" method="POST" style="margin-left: 200px" onsubmit="return validate();">
                             {% csrf_token %}
                             <div class="form-group">
@@ -78,10 +79,6 @@
                                 </div>
                             </div>
                         </form>
-                        <div class="alert alert-warning" id="error">
-                            <div id="msg"></div>
-                            <div id="msg1"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -124,9 +121,19 @@
             $('#error').show();
             if (fl1 && fl2) {
                 $('#error').hide();
-                $(document).post('/signin/', inf = {
+                $.post('/signin/', inf = {
                     password: password,
-                    username: username
+                    username: username,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }, function (txt) {
+                    if (txt == 'true') {
+                        location.reload();
+                    }
+                    else {
+                        $('#msg').show();
+                        $('#msg').html('Неправильный логин или пароль');
+                        $('#error').show();
+                    }
                 });
             }
 

@@ -9,8 +9,8 @@ class CreateComputerForm(forms.ModelForm):
 
     class Meta:
         model = Computer
-        fields = ('serial_num', 'brand', 'comp_pic', 'type', 'screen_size', 'installed_OS',
-                  'processor_type', 'RAM', 'price')
+        fields = ('serial_num', 'brand', 'comp_pic', 'type', 'screen_size',
+                  'installed_OS', 'processor_type', 'RAM', 'price')
 
     def save(self, commit=False):
         computer = super(CreateComputerForm, self).save(commit=False)
@@ -19,28 +19,37 @@ class CreateComputerForm(forms.ModelForm):
 
 
 class RegistrationForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'username'}),
-                               min_length=5, label='Логин:')
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'name'}),
-                           max_length=30, label='Имя:')
-    surname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'surname'}),
-                              max_length=30, label='Фамилия:')
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'id': 'email'}), label='Email')
-    phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'phone'}), label='Телефон')
-    address = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'address'}), label='Адрес')
-    password = forms.CharField( widget=forms.PasswordInput(attrs={'class': 'form-control', 'id': 'password'}),
-                                min_length=8, label='Пароль:')
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'id': 'password2'}),
-                                min_length=8, label='Повторите пароль:')
+    username = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'id': 'username'}),
+        min_length=5, label='Логин:')
+    name = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'id': 'name'}),
+        max_length=30, label='Имя:')
+    surname = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'id': 'surname'}),
+        max_length=30, label='Фамилия:')
+    email = forms.EmailField(widget=forms.EmailInput(
+        attrs={'class': 'form-control', 'id': 'email'}), label='Email')
+    phone = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'id': 'phone'}), label='Телефон')
+    address = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'id': 'address'}), label='Адрес')
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={'class': 'form-control', 'id': 'password'}),
+        min_length=8, label='Пароль:')
+    password2 = forms.CharField(widget=forms.PasswordInput(
+        attrs={'class': 'form-control', 'id': 'password2'}),
+        min_length=8, label='Повторите пароль:')
 
     def clean_password2(self):
-        if self.cleaned_data.get('password') != self.cleaned_data.get('password2'):
-            raise forms.ValidationError ('Passwords does not match')
+        if self.cleaned_data.get('password') != \
+                self.cleaned_data.get('password2'):
+            raise forms.ValidationError('Passwords does not match')
 
     def clean_username(self):
-        username=self.cleaned_data.get('username')
+        username = self.cleaned_data.get('username')
         try:
-            u=User.objects.get(username=username)
+            u = User.objects.get(username=username)
             raise forms.ValidationError('This login already uses')
         except User.DoesNotExist:
             return username

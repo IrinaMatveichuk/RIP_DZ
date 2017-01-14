@@ -38,7 +38,7 @@
                 </div>
             {% elif request.user.is_authenticated %}
                 <h4>Мой заказ</h4>
-                <div class="container">
+                <div class="container" id="items">
                     {% for el in order.computers.all %}
                         <div class="container_fluid">
                             <p style="width: 100px; display: inline-block;">{{ el.brand }} {{ el.serial_num }}</p>
@@ -63,7 +63,10 @@
             $.post('/order_delete/', {
                 comp_id: comp_id,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
-                });
+                }, function (txt) {
+                if (txt == 'ok')
+                    $('#items').load(document.URL + ' #items');
+            });
         });
     });
     </script>

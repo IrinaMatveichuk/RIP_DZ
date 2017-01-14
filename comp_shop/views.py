@@ -6,9 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from datetime import datetime, date, time
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
-import json
+from datetime import datetime
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 class ComputerList(View):
@@ -26,19 +25,8 @@ class ComputerList(View):
             computers = paginator.page(1)
         except EmptyPage:
             computers = paginator.page(paginator.num_pages)
-        return render(request, 'computer_list.html', {'computers':  computers, 'order':order})
-
-    def post(self, request):
-        errors = []
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            auth.login(request, user)
-            return redirect('/')
-        else:
-            errors.append('Неправильный логин или пароль')
-        return render(request, 'computer_list.html', {'errors': errors, 'username': username})
+        return render(request, 'computer_list.html',
+                      {'computers':  computers, 'order': order})
 
 
 def create_computer(request):
@@ -48,7 +36,7 @@ def create_computer(request):
             form.save(True)
             serial_num = request.POST.get('serial_num')
             comp = Computer.objects.get(serial_num=serial_num)
-            return render(request, 'computer.html', {'comp':comp})
+            return render(request, 'computer.html', {'comp': comp})
     else:
         form = CreateComputerForm()
 
@@ -60,26 +48,6 @@ def contacts(request):
 
 
 def signin(request):
-    errors = []
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        if not username:
-            errors.append('Введите логин')
-        elif not password:
-            errors.append('Введите пароль')
-        else:
-            user = authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                return redirect('/')
-            else:
-                errors.append('Неправильный логин или пароль')
-        return render(request, 'signin.html', {'errors': errors, 'username': username})
-    return render(request, 'signin.html', {'errors': errors})
-
-
-def signin1(request):
     if request.is_ajax():
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -116,7 +84,7 @@ def user_page(request):
 
 
 def logout_view(request):
-    redirect = request.GET.get('main_page','/')
+    redirect = request.GET.get('main_page', '/')
     auth.logout(request)
     return HttpResponseRedirect(redirect)
 
@@ -126,10 +94,14 @@ class ComputerView(View):
         users = []
         computer = Computer.objects.get(id=id)
         orders = computer.order_set.all()
-        ord = Order.objects.get(user_id=request.user.id)
+        try:
+            ord = Order.objects.get(user_id=request.user.id)
+        except:
+            ord = []
         for order in orders:
             users.append(User.objects.get(id=order.user_id_id))
-        return render(request, 'computer.html', {'comp': computer, 'users': users, 'order': ord})
+        return render(request, 'computer.html',
+                      {'comp': computer, 'users': users, 'order': ord})
 
 
 @ensure_csrf_cookie
@@ -159,6 +131,16 @@ def order_delete(request):
         comp = Computer.objects.get(id=comp_id)  # комп
         order = Order.objects.get(user_id_id=user_id)  # заказ
         order.computers.remove(comp)
+        return HttpResponse('ok')
+    else:
+        return HttpResponse('bad')
+
+
+def delete_computer(request):
+    if request.is_ajax():
+        comp_id = request.POST.get('comp_id')
+        comp = Computer.objects.get(id=comp_id)
+        comp.delete()
         return HttpResponse('ok')
     else:
         return HttpResponse('bad')

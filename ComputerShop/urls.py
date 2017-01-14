@@ -24,12 +24,13 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', ComputerList.as_view(), name='main_page'),
     url(r'^add_computer/$', create_computer, name='create_computer'),
+    url(r'^del_computer/$', delete_computer, name='delete_computer'),
     url(r'^contacts/$', contacts, name='contacts'),
-    url(r'^signin/$', signin1, name='signin'),
+    url(r'^signin/$', signin, name='signin'),
     url(r'^signup/$', signup, name='signup'),
     url(r'^logout$',  logout_view, name='logout'),
     url(r'^user_page/$', user_page, name='user_page'),
-    url(r'^(?P<id>\d+)$', ComputerView.as_view(), name='computer_url'),
+    url(r'^(?P<id>\d+)/$', ComputerView.as_view(), name='computer_url'),
     url(r'^order_add/$', order_add, name='order_add'),
     url(r'^order_delete/$', order_delete, name='order_delete')
 ]

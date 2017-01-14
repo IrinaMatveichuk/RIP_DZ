@@ -7,8 +7,8 @@
 
 {% block body %}
     {% if request.user.is_authenticated and request.user.is_superuser %}
-        <h3 align="center" style="height: 310px">Аккаунт администратора</h3>
-        <a href="{% url 'logout' %}" class="btn btn-primary col-md-offset-2">Выйти</a>
+        <h3 align="center" style="height: 33px">Аккаунт администратора</h3>
+       <p align="center" style="height: 280px"><a href="{% url 'logout' %}" class="btn btn-primary">Выйти</a></p>
     {% else %}
         <h3 class="col-md-offset-2">Личные данные пользователя</h3>
         <div class="container col-md-offset-2" style="height: 310px">

@@ -4,13 +4,20 @@ from django.contrib.auth.models import AbstractUser
 
 class Computer(models.Model):
     id = models.AutoField(primary_key=True)
-    serial_num = models.CharField(max_length=19, unique=True, verbose_name='Серийный номер')
-    comp_pic = models.ImageField(upload_to='media/', blank=True, max_length=1000, verbose_name='Фото компьютера')
-    brand = models.CharField(max_length=20, default='', verbose_name='Производитель')
-    type = models.CharField(max_length=10, default='', verbose_name='Тип')  # desktops, laptop, tablet
+    serial_num = models.CharField(max_length=19, unique=True,
+                                  verbose_name='Серийный номер')
+    comp_pic = models.ImageField(upload_to='media/', blank=True,
+                                 max_length=1000,
+                                 verbose_name='Фото компьютера')
+    brand = models.CharField(max_length=20, default='',
+                             verbose_name='Производитель')
+    type = models.CharField(max_length=10, default='',
+                            verbose_name='Тип')  # desktops, laptop, tablet
     screen_size = models.FloatField(verbose_name='Размер экрана')
-    installed_OS = models.CharField(max_length=20, default='', verbose_name='ОС')
-    processor_type = models.CharField(max_length=20, default='', verbose_name='Тип процессора')
+    installed_OS = models.CharField(max_length=20, default='',
+                                    verbose_name='ОС')
+    processor_type = models.CharField(max_length=20, default='',
+                                      verbose_name='Тип процессора')
     RAM = models.FloatField(verbose_name='Оперативная память')
     price = models.CharField(max_length=20, default='', verbose_name='Цена')
 
@@ -32,6 +39,8 @@ class User(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 class Order(models.Model):
@@ -41,7 +50,7 @@ class Order(models.Model):
     computers = models.ManyToManyField('Computer', verbose_name='Компьютеры')
 
     def __str__(self):
-        return str(self.order_num)
+        return str(self.id)
 
     def count_computers(self):
         data = Order.computers.all()

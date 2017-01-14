@@ -21,17 +21,21 @@
                     <li>Объем ОП: {{ comp.RAM }}</li>
                 </ul>
             </td>
-            <td width="200px">
+            <td width="200px" style="vertical-align: top">
+            <div id="users" style="margin-top: 40px">
                 <p><em>Компьютер заказали:</em></p>
                 {% for user in users %}
                     <p>{{ user.first_name }} {{ user.last_name }}</p>
                 {% empty %}
                     <p>Данный компьютер еще никто не заказал</p>
                 {% endfor %}
+            </div>
             </td>
-            <td width="200px">
-                <h4 align="right" style="margin-bottom: 35px">Цена: {{ comp.price }}</h4>
-                {% if request.user.is_authenticated %}
+            <td width="200px" style="vertical-align: top">
+                <h4 align="right" style="margin-bottom: 35px; margin-top: 40px">Цена: {{ comp.price }}</h4>
+                {% if request.user.is_authenticated and request.user.is_superuser %}
+                    <button id='del_comp' class="btn btn-primary col-md-offset-6" name = '{{ comp.id }}'>Удалить</button>
+                {% elif request.user.is_authenticated %}
                     <button id='order' class="btn btn-primary col-md-offset-6" name = '{{ comp.id }}'>Заказать</button>
                 {% else %}
                     <p>Войдите, чтобы сделать заказ</p>
@@ -47,11 +51,11 @@
                 </ul>
             {% elif request.user.is_authenticated %}
                 <h4>Мой заказ</h4>
-                <div class="container">
+                <div class="container" id="items">
                     {% for el in order.computers.all %}
                         <div class="container_fluid">
                             <p style="width: 100px; display: inline-block;">{{ el.brand }} {{ el.serial_num }}</p>
-                            <button id="delete{{ el.id }}" onclick="onClick(event, name)" style="margin-left: 60px" name="{{ el.id }}">Удалить</button>
+                            <button id="delete{{ el.id }}" onclick="del(event, name)" style="margin-left: 60px" name="{{ el.id }}">Удалить</button>
                         </div>
                     {% empty %}
                         <p>Ваш заказ пуст</p>
@@ -63,14 +67,17 @@
 
 {% block javascript %}
     <script type="text/javascript">
-    function onClick(e, name) {
+    function del(e, name) {
             e.preventDefault();
             var comp_id = name;
-            alert(comp_id);
             $.post('/order_delete/', {
                 comp_id: comp_id,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
-                });
+                }, function (txt) {
+                if (txt == 'ok')
+                    $('#users').load(document.URL + ' #users');
+                    $('#items').load(document.URL + ' #items');
+            });
             }
     $(document).ready(function() {
         $('#order').click(function (e) {
@@ -79,8 +86,22 @@
             $.post('/order_add/', {
                 comp_id: comp_id,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
-                });
-
+                }, function (text) {
+                if (text == 'ok')
+                    $('#users').load(document.URL + ' #users');
+                    $('#items').load(document.URL + ' #items');
+            });
+        });
+        $('#del_comp').click(function (e) {
+            e.preventDefault();
+            var comp_id = $(this).attr('name');
+            $.post('/del_computer/', {
+                comp_id: comp_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                }, function (txt) {
+                if (txt == 'ok')
+                    location.href='/';
+            });
         });
     });
     </script>
